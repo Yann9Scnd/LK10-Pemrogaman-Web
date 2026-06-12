@@ -1,6 +1,6 @@
-<p align="center">
-  <kbd><big><strong>⚡ GaranganBaik ⚡</strong></big></kbd>
-</p>
+<h1 align="center">
+  <big><big><big><strong>⚡ <font color="#818cf8">Garangan</font><font color="#7c3aed">Baik</font> ⚡</strong></big></big></big>
+</h1>
 
 <p align="center">
   Aplikasi Autentikasi Aman berbasis <strong>Laravel 12</strong> dengan integrasi <strong>WorkOS AuthKit (SSO)</strong>
@@ -123,5 +123,5 @@ Ikuti langkah-langkah berikut untuk menjalankan aplikasi di komputer lokal Anda:
 ---
 
 <p align="center">
-  <sub>Dibuat khusus untuk <strong>Ceo Adyatma86</strong> &copy; 2026</sub>
+  <sub>Dibuat oleh <strong>Ceo Adyatma86</strong> &copy; 2026</sub>
 </p>
