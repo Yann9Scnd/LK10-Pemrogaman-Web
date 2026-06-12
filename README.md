@@ -1,5 +1,5 @@
 <p align="center">
-  <span style="font-size: 2.5rem; font-weight: 900; letter-spacing: 4px; background: linear-gradient(135deg, #818cf8, #a78bfa); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">GaranganBaik</span>
+  <strong style="font-size: 2.5rem; letter-spacing: 4px;">GaranganBaik</strong>
 </p>
 
 <p align="center">
@@ -113,8 +113,7 @@ Ikuti langkah-langkah berikut untuk menjalankan aplikasi di komputer lokal Anda:
 │           └── DashboardController.php # Dashboard & feedback
 ├── resources/views/
 │   ├── login.blade.php                 # Halaman login
-│   ├── dashboard.blade.php             # Dashboard utama
-│   └── welcome.blade.php               # Halaman selamat datang
+│   └── dashboard.blade.php             # Dashboard utama
 ├── public/images/                      # Screenshot aplikasi
 ├── routes/web.php                      # Definisi rute
 └── database/
