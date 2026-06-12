@@ -1,5 +1,5 @@
 <p align="center">
-  <strong style="font-size: 2.5rem; letter-spacing: 4px;">GaranganBaik</strong>
+  <kbd><big><strong>⚡ GaranganBaik ⚡</strong></big></kbd>
 </p>
 
 <p align="center">
