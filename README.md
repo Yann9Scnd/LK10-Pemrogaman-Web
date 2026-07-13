@@ -52,10 +52,10 @@ Aplikasi ini dibangun menggunakan ekosistem teknologi modern:
 
 | Halaman | Deskripsi | Preview |
 | :--- | :--- | :--- |
-| **Login Gateway** | Pintu masuk aman terintegrasi WorkOS | ![Login Gateway](public/images/4.png) |
+| **Login View** | Tampilan Login Awal | ![Login view](public/images/4.png) |
+| **Login Gateway** | Pintu masuk aman terintegrasi WorkOS | ![Login Gateway](public/images/3.png) |
 | **User Dashboard** | Panel utama informasi profil pengguna | ![User Dashboard](public/images/1.png) |
 | **API Endpoint JSON** | Data profil yang diakses aman via endpoint | ![API Endpoint](public/images/2.png) |
-| **Postman API Client** | Contoh respon JSON terautentikasi | ![Postman Response](public/images/3.png) |
 
 ---
 
