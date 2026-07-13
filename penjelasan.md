@@ -1,6 +1,6 @@
 # Penjelasan Keamanan & Checklist Keamanan Dasar
 
-Dokumen ini disusun khusus untuk **Ceo Adyatma86** guna memberikan penjelasan mengenai potensi risiko keamanan (SQL Injection & XSS) serta menyajikan checklist keamanan dasar pada aplikasi Laravel.
+Dokumen ini disusun oleh **Muhammad Mardiansyah** guna memberikan penjelasan mengenai potensi risiko keamanan (SQL Injection & XSS) serta menyajikan checklist keamanan dasar pada aplikasi Laravel.
 
 ---
 

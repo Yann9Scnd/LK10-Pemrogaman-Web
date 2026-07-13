@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login - Aplikasi Secure Ceo Adyatma86</title>
+    <title>Login - Aplikasi Secure</title>
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
 <body class="bg-slate-950 text-slate-100 flex items-center justify-center min-h-screen font-sans selection:bg-indigo-500 selection:text-white overflow-hidden relative">
@@ -42,7 +42,7 @@
         </div>
         
         <div class="mt-8 pt-6 border-t border-slate-800/80 text-center">
-            <span class="text-xs text-slate-500">Dikembangkan untuk Ceo Adyatma86</span>
+            <span class="text-xs text-slate-500">Dikembangkan oleh Muhammad Mardiansyah</span>
         </div>
     </div>
 </body>
