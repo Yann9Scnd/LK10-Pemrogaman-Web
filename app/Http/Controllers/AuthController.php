@@ -11,18 +11,25 @@ use Illuminate\Support\Str;
 
 class AuthController extends Controller
 {
+    /**
+     * Redirect users to the WorkOS AuthKit authorize URL.
+     */
     public function login(Request $request)
     {
-        $clientId = env('WORKOS_CLIENT_ID');
-        $redirectUri = env('WORKOS_REDIRECT_URI');
+        $clientId = config('services.workos.client_id');
+        $redirectUri = config('services.workos.redirect_uri');
 
-        // Gunakan screen_hint=sign-in yang didukung secara resmi oleh WorkOS AuthKit
+        // SECURITY FIX (Bug 3): Generate cryptographically secure state token to prevent OAuth CSRF
+        $state = Str::random(40);
+        $request->session()->put('oauth_state', $state);
+
         $query = http_build_query([
             'client_id'     => $clientId,
             'redirect_uri'  => $redirectUri,
             'response_type' => 'code',
             'provider'      => 'authkit',
             'screen_hint'   => 'sign-in',
+            'state'         => $state, // Pass the state to WorkOS
         ]);
 
         return redirect('https://api.workos.com/user_management/authorize?' . $query);
@@ -34,13 +41,22 @@ class AuthController extends Controller
     public function callback(Request $request)
     {
         $code = $request->query('code');
+        $state = $request->query('state');
+        $savedState = $request->session()->pull('oauth_state'); // Retrieve and clear from session
 
-        if (!$code) {
-            return redirect()->route('login')->with('error', 'Authentication code not provided.');
+        // SECURITY FIX (Bug 3): Validate the state parameter
+        if (!$state || !$savedState || $state !== $savedState) {
+            return redirect()->route('login.page')->with('error', 'Invalid state token. Possible CSRF attack detected.');
         }
 
-        $clientId = env('WORKOS_CLIENT_ID');
-        $apiKey = env('WORKOS_API_KEY');
+        // BUG FIX (Bug 1): Redirect to login.page instead of login (which causes loop redirect)
+        if (!$code) {
+            return redirect()->route('login.page')->with('error', 'Authentication code not provided.');
+        }
+x`
+        // ARCHITECTURAL REFACTOR (Bug 2): Use config() instead of direct env() calls
+        $clientId = config('services.workos.client_id');
+        $apiKey = config('services.workos.api_key');
 
         try {
             // Real WorkOS Code Exchange
@@ -55,28 +71,25 @@ class AuthController extends Controller
 
             if ($response->failed()) {
                 Log::error('WorkOS code exchange failed', ['response' => $response->body()]);
-                return redirect()->route('login')->with('error', 'Authentication failed. Please verify your WorkOS credentials.');
+                return redirect()->route('login.page')->with('error', 'Authentication failed. Please verify your WorkOS credentials.');
             }
 
             $data = $response->json();
             Log::info('WorkOS auth response:', $data);
             $workosUser = $data['user'] ?? null;
             
-            // Extract session_id (sid) from JWT Access Token
+            // CODE REFACTOR (Refactoring 1): Extract JWT Access Token payload decoding into a private helper method
             $sessionId = null;
             if (!empty($data['access_token'])) {
-                $parts = explode('.', $data['access_token']);
-                if (count($parts) === 3) {
-                    $payload = json_decode(base64_decode(str_replace(['-', '_'], ['+', '/'], $parts[1])), true);
-                    $sessionId = $payload['sid'] ?? null;
-                }
+                $payload = $this->decodeJwtPayload($data['access_token']);
+                $sessionId = $payload['sid'] ?? null;
             }
             if (!$sessionId) {
                 $sessionId = $data['session_id'] ?? ($data['session']['id'] ?? null);
             }
 
             if (!$workosUser || empty($workosUser['email'])) {
-                return redirect()->route('login')->with('error', 'Failed to retrieve email from WorkOS.');
+                return redirect()->route('login.page')->with('error', 'Failed to retrieve email from WorkOS.');
             }
 
             $name = trim(($workosUser['first_name'] ?? '') . ' ' . ($workosUser['last_name'] ?? 'User'));
@@ -94,7 +107,7 @@ class AuthController extends Controller
 
             Auth::login($user);
             
-            // Simpan session_id WorkOS ke session Laravel
+            // Store WorkOS session_id to Laravel session for logout
             if ($sessionId) {
                 $request->session()->put('workos_session_id', $sessionId);
             }
@@ -102,7 +115,7 @@ class AuthController extends Controller
             return redirect()->route('dashboard')->with('success', 'Logged in successfully via WorkOS!');
         } catch (\Exception $e) {
             Log::error('WorkOS Exception', ['message' => $e->getMessage()]);
-            return redirect()->route('login')->with('error', 'An unexpected error occurred during login.');
+            return redirect()->route('login.page')->with('error', 'An unexpected error occurred during login.');
         }
     }
 
@@ -117,7 +130,7 @@ class AuthController extends Controller
         $request->session()->invalidate();
         $request->session()->regenerateToken();
 
-        // Jika ada session_id WorkOS, redirect ke URL logout WorkOS untuk menghapus cookie di sisi WorkOS
+        // If there's a WorkOS session ID, redirect to WorkOS logout endpoint to clear cookies on their end
         if ($workosSessionId) {
             $query = http_build_query([
                 'session_id' => $workosSessionId,
@@ -126,5 +139,23 @@ class AuthController extends Controller
         }
 
         return redirect()->route('login.page')->with('success', 'Anda berhasil keluar.');
+    }
+
+    /**
+     * CODE REFACTOR (Refactoring 1): Helper to decode JWT token payload safely.
+     */
+    private function decodeJwtPayload(string $token): ?array
+    {
+        $parts = explode('.', $token);
+        if (count($parts) !== 3) {
+            return null;
+        }
+
+        // Base64URL decoding helper
+        $base64 = strtr($parts[1], '-_', '+/');
+        $padded = str_pad($base64, strlen($base64) % 4, '=', STR_PAD_RIGHT);
+        $decoded = base64_decode($padded);
+
+        return $decoded ? json_decode($decoded, true) : null;
     }
 }

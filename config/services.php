@@ -35,4 +35,10 @@ return [
         ],
     ],
 
+    'workos' => [
+        'client_id'     => env('WORKOS_CLIENT_ID'),
+        'api_key'       => env('WORKOS_API_KEY'),
+        'redirect_uri'  => env('WORKOS_REDIRECT_URI'),
+    ],
+
 ];

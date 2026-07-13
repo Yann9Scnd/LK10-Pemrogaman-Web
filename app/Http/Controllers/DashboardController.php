@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
+use App\Http\Requests\FeedbackRequest;
 
 class DashboardController extends Controller
 {
@@ -17,14 +17,10 @@ class DashboardController extends Controller
     /**
      * Handle the input validation form submission.
      */
-    public function submitForm(Request $request)
+    public function submitForm(FeedbackRequest $request)
     {
-        // Terapkan validasi input yang ketat
-        $validated = $request->validate([
-            'name' => 'required|string|min:3|max:50',
-            'email' => 'required|email|max:100',
-            'feedback' => 'required|string|min:10|max:1000',
-        ]);
+        // CODE REFACTOR (Refactoring 2): Clean controller using validated data from FeedbackRequest
+        $validated = $request->validated();
         
         return back()->with('success_feedback', 'Feedback Anda berhasil dikirim dengan aman!');
     }
