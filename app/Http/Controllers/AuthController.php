@@ -53,7 +53,7 @@ class AuthController extends Controller
         if (!$code) {
             return redirect()->route('login.page')->with('error', 'Authentication code not provided.');
         }
-x`
+
         // ARCHITECTURAL REFACTOR (Bug 2): Use config() instead of direct env() calls
         $clientId = config('services.workos.client_id');
         $apiKey = config('services.workos.api_key');
